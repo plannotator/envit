@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>envit security</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="description" content="What envit contacts, what it writes, how releases are verified, and how to report a vulnerability.">
+<style>
+  :root { --bg:#ffffff; --fg:#1b1b1b; --dim:#6a6a6a; --line:#e4e4e4; --code-bg:#f6f6f4; --link:#0b63ce; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#121212; --fg:#dcdcdc; --dim:#909090; --line:#2b2b2b; --code-bg:#1b1b1b; --link:#6aa9f4; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif; }
+  main { max-width:42rem; margin:0 auto; padding:4rem 1.25rem; }
+  h1 { font-size:1.5rem; font-weight:650; margin:0 0 .25rem; letter-spacing:-.01em; }
+  .tagline { color:var(--dim); margin:0 0 2rem; }
+  h2 { font-size:1.05rem; font-weight:650; margin:2.5rem 0 .6rem; }
+  p { margin:.6rem 0; }
+  a { color:var(--link); text-decoration:none; } a:hover { text-decoration:underline; }
+  pre { background:var(--code-bg); border:1px solid var(--line); border-radius:6px; padding:.85rem 1rem; overflow-x:auto; font:13px/1.6 ui-monospace,"SF Mono",Menlo,Consolas,monospace; margin:.8rem 0; }
+  code { font:.875em ui-monospace,"SF Mono",Menlo,Consolas,monospace; background:var(--code-bg); padding:.1em .35em; border-radius:4px; }
+  pre code { background:none; padding:0; font-size:inherit; }
+  table { border-collapse:collapse; width:100%; margin:.8rem 0; font-size:.9rem; }
+  th,td { text-align:left; padding:.35rem .75rem .35rem 0; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { font-weight:650; color:var(--dim); font-size:.8rem; }
+  td:first-child { white-space:nowrap; }
+  ul { padding-left:1.2rem; margin:.6rem 0; } li { margin:.3rem 0; }
+  footer { margin-top:3.5rem; padding-top:1.25rem; border-top:1px solid var(--line); color:var(--dim); font-size:.875rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1><a href="/" style="color:inherit">envit</a> security</h1>
+  <p class="tagline">What envit contacts, what it writes, how releases are verified.</p>
+
+  <h2>Network</h2>
+
+  <p>envit contacts only the git remotes that your manifests declare. It
+  fetches over the plain git protocol (HTTPS, or <code>file://</code>)
+  with an embedded git implementation. It sends no telemetry, checks for
+  no updates, opens no ports, and calls no forge API.</p>
+
+  <table>
+    <tr><th>request</th><th>when</th></tr>
+    <tr><td>git fetch to a declared remote</td><td><code>sync</code> for a repo or skill with no usable checkout in the store, or a stale <code>auto</code> repo (at most once per 24 h), or <code>update</code></td></tr>
+    <tr><td>nothing</td><td><code>sync --offline</code>, <code>sync --frozen</code> with a warm store, <code>status</code>, <code>skills</code>, <code>pin</code>, <code>gc</code></td></tr>
+  </table>
+
+  <p>Set <code>ENVIT_NO_REFRESH=1</code> to block every implicit fetch.
+  <code>sync --offline</code> guarantees no network for one run.</p>
+
+  <h2>Filesystem</h2>
+
+  <p>Every path envit writes, and how to undo it.</p>
+
+  <table>
+    <tr><th>path</th><th>what</th><th>undo</th></tr>
+    <tr><td><code>~/.envit/</code></td><td>the store: bare git repos, read-only checkouts keyed by commit, locks, the project registry, and the optional global manifest</td><td><code>envit gc</code> removes unreferenced checkouts; delete the directory to reset everything</td></tr>
+    <tr><td><code>envit.json</code>, <code>envit.lock.json</code></td><td>your manifest and lock, in the project root</td><td>yours; edit or delete</td></tr>
+    <tr><td><code>.envit/</code></td><td>symlinks to store checkouts, a generated <code>AGENTS.md</code>, a <code>CLAUDE.md</code> symlink to it</td><td>gitignored; delete the directory</td></tr>
+    <tr><td><code>.agents/skills/&lt;name&gt;</code>, <code>.claude/skills/&lt;name&gt;</code></td><td>one symlink per declared skill (a managed copy when <code>modelInvocable</code> is set)</td><td>remove the skill from the manifest; <code>sync</code> prunes only entries it created</td></tr>
+    <tr><td><code>~/.agents/skills/</code>, <code>~/.claude/skills/</code></td><td>the same, for the global manifest</td><td>same</td></tr>
+    <tr><td><code>AGENTS.md</code>, <code>CLAUDE.md</code> in the project root</td><td>a fenced note between <code>&lt;!-- envit:begin --&gt;</code> and <code>&lt;!-- envit:end --&gt;</code>, only when the file already exists</td><td>set <code>"agentsMd": false</code>, or delete the block</td></tr>
+    <tr><td><code>.gitignore</code></td><td>one line, <code>.envit/</code>, added by <code>init</code> when the file exists</td><td>delete the line</td></tr>
+  </table>
+
+  <p>envit never modifies files inside a checkout, never creates
+  <code>AGENTS.md</code> or <code>CLAUDE.md</code>, and never deletes a
+  symlink or directory it did not create.</p>
+
+  <h2>Skills are instructions</h2>
+
+  <p>A skill is text that an agent will follow. Treat a skills source like
+  a dependency with the ability to run code. envit gives you three
+  controls:</p>
+
+  <ul>
+    <li><b>Pinned.</b> Every skill is materialized at the commit recorded
+    in <code>envit.lock.json</code>. It cannot change between syncs.
+    Only <code>update</code> moves it, and <code>update</code> prints the
+    old and new commits.</li>
+    <li><b>Reproducible.</b> <code>sync --frozen</code> installs exactly
+    the reviewed commits, on any machine, or fails.</li>
+    <li><b>Selective.</b> You name each skill you take from a source.
+    Nothing else from that repo lands where agents look.</li>
+  </ul>
+
+  <p>Review a skills source before you add it. Pin it with
+  <code>"update": "frozen"</code> if you want no drift at all.</p>
+
+  <h2>Release integrity</h2>
+
+  <p>Release binaries are built by the public workflow in
+  <a href="https://github.com/plannotator/envit/tree/main/.github/workflows">.github/workflows/release.yml</a>
+  from a version tag. Each asset ships with a SHA-256 checksum and a
+  GitHub build-provenance attestation. The install script verifies the
+  checksum, and verifies provenance when the GitHub CLI is available.
+  Verify by hand:</p>
+
+<pre><code>gh attestation verify envit-aarch64-apple-darwin.tar.gz --owner plannotator</code></pre>
+
+  <p>The source is Rust with <code>#![forbid(unsafe_code)]</code> in both
+  crates. Continuous integration runs clippy with warnings as errors, the
+  full test suite on macOS and Linux, and <code>cargo deny</code> for
+  advisories, licenses, and sources. Actions are pinned by commit SHA.
+  Dependabot watches Cargo and Actions weekly.</p>
+
+  <h2>Report a vulnerability</h2>
+
+  <p>Do not open a public issue. Use
+  <a href="https://github.com/plannotator/envit/security/advisories/new">GitHub's private reporting form</a>
+  with the affected version, reproduction steps, and impact. Fixes are
+  provided for the latest released version.</p>
+
+  <p>Automated checks reduce risk; they do not prove the absence of
+  vulnerabilities. envit claims no certification.</p>
+
+  <footer>MIT OR Apache-2.0 · <a href="/">envit.dev</a></footer>
+</main>
+</body>
+</html>
