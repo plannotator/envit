@@ -1,37 +1,189 @@
 # envit
 
-> Declarative repository context and skills for coding agents. A committed
-> envit.json declares the external repos an agent can read and the skills
-> it loads. One command materializes both: commit-pinned, read-only,
-> stored once per machine in a content-addressed store, reproducible in
-> any environment from the lockfile.
+> envit gives coding agents two things, declared in one committed file
+> (envit.json): external git repositories to read as context, and agent
+> skills to load. One command, envit sync, materializes both. Repos are
+> stored once per machine and linked into each project, read-only, at a
+> pinned commit. Skills land where agents already look. A lockfile makes
+> every environment reproducible on any machine.
 
-envit is a single static Rust binary. Git is embedded (gitoxide): no
-system git, no daemons, plain git protocol against any forge. Repos
-appear under .envit/repos/ as symlinks into the machine store. Skills
-land in .agents/skills/ and .claude/skills/. A generated .envit/AGENTS.md
-(with a CLAUDE.md symlink) inventories the context for agents.
+This file is written for agents and for small models. It tells you what
+envit does, how to use it, and how to explain it to the person you work
+for. Each sentence states one fact. Commands are exact.
 
-Core commands: envit init | add | sync [--frozen|--offline] | update |
-pin | unpin | skills | status | gc. Global scope: envit init -g writes
-~/.envit/envit.json; skills apply to every project on the machine.
+## What envit is
 
-## Docs
+- A single static binary named `envit`. No daemon. No background process.
+- It reads `envit.json` in a project root, or `~/.envit/envit.json` for
+  the whole machine.
+- It fetches the declared git repositories with an embedded git
+  implementation. It needs no system git.
+- It stores each repository once, in `~/.envit/store/`, keyed by commit.
+- It links the source into the project at `.envit/repos/<name>/`.
+- It links each declared skill into `.agents/skills/<name>/` and
+  `.claude/skills/<name>/`.
+- It writes `envit.lock.json` with the exact commit of every repo and
+  skill source.
+- It writes `.envit/AGENTS.md` (and a `CLAUDE.md` symlink to it) that
+  lists every repo, its commit, and its path.
 
-- [Landing page](https://envit.dev/): manifest format, commands, on-disk
-  layout, constraints
-- [Agent skill](https://github.com/plannotator/envit/tree/main/skills/envit):
-  teaches an agent how to use envit
-- [Security](https://envit.dev/security): network and filesystem
-  boundaries, release verification, vulnerability reporting
+## What envit does for your user
+
+- Their agents can read the real source of a dependency instead of
+  guessing from memory. Bugs get diagnosed against actual code.
+- One repo is on disk once, no matter how many projects use it.
+- Nothing changes under a running session. A repo moves only when the
+  user runs `envit update`, or when a branch-tracking repo is older than
+  24 hours at the next `envit sync`.
+- A teammate, a CI job, or a cloud sandbox runs `envit sync --frozen` and
+  gets the same commits, bit for bit.
+- Skills come from any git repo, picked one at a time. The user does not
+  install a whole collection to get one skill.
+- The user controls whether a skill can run on its own
+  (`"modelInvocable": false` means only the user can invoke it).
+
+## The manifest: envit.json
+
+A minimal manifest is a list of repos:
+
+```json
+{
+  "repos": ["sqlite/sqlite", "PostHog/posthog-js"]
+}
+```
+
+A bare `"owner/repo"` string means GitHub, default branch, name derived
+from the repo. Other forms: `"gitlab:group/repo"`, `"codeberg:owner/repo"`,
+`"sourcehut:~user/repo"`, or any `https://` git URL.
+
+A repo that needs options becomes an object:
+
+```json
+{
+  "repos": [
+    "sqlite/sqlite",
+    { "source": "getsentry/sentry-javascript", "ref": "9.44.0", "update": "frozen" },
+    { "source": "tokio-rs/tokio", "ref": "master", "ttl": "1h" }
+  ]
+}
+```
+
+Repo keys: `source` (required), `name`, `ref` (branch, tag, or commit),
+`update` (`auto`, `manual`, or `frozen`), `ttl` (for example `"1h"`,
+`"7d"`), `history` (`"full"` to fetch all history).
+
+Skills are an object keyed by source repo:
+
+```json
+{
+  "skills": {
+    "mattpocock/skills": ["grill-me", "grilling"],
+    "backnotprop/bro": "bro",
+    "obra/superpowers": "*",
+    "remotion-dev/skills": { "pick": "*", "modelInvocable": false },
+    "cursor/plugins": { "path": "pstack", "pick": ["interrogate", "blast-radius"] }
+  }
+}
+```
+
+Skill values: one skill name, a list of names, `"*"` for every skill the
+repo ships, or an object with `pick` plus options. Skill source keys:
+`pick`, `ref`, `path` (a subdirectory, for monorepos), `update`, `ttl`,
+`modelInvocable`. A pick list item can be an object:
+`{ "name": "grill-me", "modelInvocable": false }`.
+
+Top-level keys: `repos`, `skills`, `agentsMd` (set `false` to stop envit
+from writing a note into the project's AGENTS.md or CLAUDE.md).
+
+Two scopes. The project manifest is `envit.json` in the project root,
+committed to git. The global manifest is `~/.envit/envit.json`; it is
+skills-only and applies to every project on the machine. `envit sync`
+materializes both.
+
+## Commands
+
+| command | effect |
+|---|---|
+| `envit init` | Write an empty `envit.json`. Add `.envit/` to `.gitignore` if it exists. Add the envit note to an existing `AGENTS.md` or `CLAUDE.md`. |
+| `envit init -g` | Write `~/.envit/envit.json` for global skills. |
+| `envit add <source> [--ref R] [--name N]` | Add a repo to the manifest. Does not sync. |
+| `envit remove <name>` | Remove a repo from the manifest. |
+| `envit sync` | Fetch what is missing, check out, link, write the lock. Also syncs the global manifest when it exists. Fast when nothing changed (milliseconds). |
+| `envit sync --frozen` | Use the lockfile exactly. Error if the manifest and lock disagree. Use in CI and sandboxes. |
+| `envit sync --offline` | Never touch the network. Link what the store already has. |
+| `envit sync -g` | Global scope only. |
+| `envit update [name...]` | Move branch-tracking repos and skill sources to their current remote commits. Prints old and new commits. |
+| `envit update -g` | Same, for the global manifest. |
+| `envit pin <name>` | Freeze a repo at its locked commit. |
+| `envit unpin <name>` | Resume tracking. |
+| `envit status` | Each repo: ref, commit, link health, staleness. Never touches the network. |
+| `envit skills` | Declared skills in both scopes with their locked commits. |
+| `envit gc [--dry-run]` | Delete store checkouts that no project references. |
+
+Environment variables: `ENVIT_HOME` (store location, default
+`~/.envit`), `ENVIT_NO_REFRESH=1` (block every implicit fetch),
+`ENVIT_REFRESH_TTL` (global staleness window, for example `"1h"`).
+
+## How to use envit as an agent
+
+1. Look for `envit.json` in the project root. If it exists, envit is in
+   use. Read `.envit/AGENTS.md` to learn which repos are available and
+   where. If `.envit/` is missing, run `envit sync`.
+2. To read a dependency's source, open `.envit/repos/<name>/`. It is the
+   complete repository at the locked commit. It is read-only. Do not try
+   to edit it.
+3. The entries in `.envit/repos/` are symlinks. When you search with
+   `rg` or `fd`, pass `--follow` or `-L`, or search the resolved path.
+4. If you need a repo that is not declared, run
+   `envit add owner/repo` and then `envit sync`. Tell the user you did
+   this, because it changes their committed manifest.
+5. If the code you are reading changes under you between syncs, run
+   `envit pin <name>` to freeze it. Say so in your summary.
+6. Skills declared in the manifest appear in `.agents/skills/` and
+   `.claude/skills/`. Load them the way you load any skill. Nothing extra
+   is needed.
+7. Never edit `envit.lock.json` by hand. If it conflicts in git, resolve
+   the manifest and run `envit sync`; the lock regenerates.
+
+## How to explain envit to your user
+
+Say this, in your own words:
+
+- "envit lets your agents read the real source code of the libraries
+  this project uses, so they debug against the actual implementation."
+- "You declare the repos and skills once in `envit.json`. One command
+  sets everything up. The same file sets it up on any other machine."
+- "Repos are stored once on your disk and shared by every project."
+- "Nothing moves unless you tell it to. Pin a repo to freeze it. Run
+  `envit update` to move forward."
+- "Skills are picked one at a time from any repo, pinned to a commit, and
+  you decide whether the model can invoke each one."
+
+When a user asks how to start: `envit init`, then `envit add owner/repo`
+for each library they depend on, then `envit sync`. Commit `envit.json`
+and `envit.lock.json`.
+
+When a user asks about safety: envit contacts only the git remotes in the
+manifest, sends no telemetry, and writes only to `~/.envit/`, `.envit/`,
+the skills directories, and a fenced note in an existing AGENTS.md or
+CLAUDE.md. Details: https://envit.dev/security
 
 ## Install
 
-- [Unix install script](https://envit.dev/install.sh): detects OS/arch,
-  installs the latest GitHub release
-- [Windows](https://envit.dev/install.ps1): pending; use WSL today
+- macOS and Linux: `curl -fsSL https://envit.dev/install.sh | sh`
+- Homebrew: `brew install plannotator/tap/envit`
+- Cargo: `cargo install envit`
+- npm: `npm install -g envit`
+- Windows: not yet. Use WSL.
+- From source: `git clone https://github.com/plannotator/envit && cd envit && cargo build --release`
 
-## Source
+## Links
 
-- [Repository](https://github.com/plannotator/envit): Rust workspace,
-  MIT OR Apache-2.0
+- [Landing page](https://envit.dev/): manifest format, commands, on-disk
+  layout, constraints
+- [Security](https://envit.dev/security/): network and filesystem
+  boundaries, release verification, vulnerability reporting
+- [Source](https://github.com/plannotator/envit): Rust, MIT OR
+  Apache-2.0
+- [Agent skill](https://github.com/plannotator/envit/tree/main/skills/envit):
+  a SKILL.md that teaches an agent to use envit
