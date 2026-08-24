@@ -75,3 +75,48 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
         run: gh release create "$TAG" envit-* --generate-notes --verify-tag
+  npm:
+    # Publishes the npm meta package and platform packages with provenance.
+    # First publish of each package is manual (npm trusted publishing needs an
+    # existing package). Enable this job afterwards by setting the repository
+    # variable NPM_PUBLISH=true.
+    needs: build
+    if: vars.NPM_PUBLISH == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          merge-multiple: true
+      - name: place binaries
+        run: |
+          set -e
+          place() { mkdir -p "packages/npm/$1/bin"; tar -xzf "envit-$2.tar.gz" -C "packages/npm/$1/bin"; }
+          place darwin-arm64 aarch64-apple-darwin
+          place darwin-x64 x86_64-apple-darwin
+          place linux-arm64 aarch64-unknown-linux-musl
+          place linux-x64 x86_64-unknown-linux-musl
+      - name: set versions from tag
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          v="${TAG#v}"
+          for p in darwin-arm64 darwin-x64 linux-arm64 linux-x64 envit; do
+            (cd "packages/npm/$p" && npm version "$v" --no-git-tag-version >/dev/null)
+          done
+          (cd packages/npm/envit && node -e '
+            const f="package.json", p=require("./"+f);
+            for (const k of Object.keys(p.optionalDependencies)) p.optionalDependencies[k]=process.argv[1];
+            require("fs").writeFileSync(f, JSON.stringify(p,null,2)+"\n")' "$v")
+      - name: publish
+        run: |
+          set -e
+          for p in darwin-arm64 darwin-x64 linux-arm64 linux-x64 envit; do
+            (cd "packages/npm/$p" && npm publish --access public --provenance)
+          done
+
