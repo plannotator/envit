@@ -12,7 +12,7 @@ that document.
 ## Build
 
 ```sh
-cargo build          # workspace: envit-core (lib) + envit-cli (bin `envit`)
+cargo build          # workspace: envit-core (lib) + envit (bin `envit`)
 cargo test
 cargo clippy
 ```

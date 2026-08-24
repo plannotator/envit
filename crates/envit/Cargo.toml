@@ -1,0 +1,23 @@
+[package]
+name = "envit"
+description = "Declarative repository context and skills for coding agents."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+homepage = "https://envit.dev"
+readme = "../../README.md"
+keywords = ["agents", "ai", "context", "skills", "cli"]
+categories = ["command-line-utilities", "development-tools"]
+
+[[bin]]
+name = "envit"
+path = "src/main.rs"
+
+[dependencies]
+envit-core.workspace = true
+clap.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true

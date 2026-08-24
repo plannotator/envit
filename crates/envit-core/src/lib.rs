@@ -2,7 +2,7 @@
 //! # envit-core
 //!
 //! All product logic for envit (working name — see PRD §19 Q1).
-//! The CLI (`envit-cli`) must stay a thin shell over this crate; nothing
+//! The CLI (`envit`) must stay a thin shell over this crate; nothing
 //! in here may depend on being invoked from a terminal (PRD §20 D2:
 //! library-first).
 //!

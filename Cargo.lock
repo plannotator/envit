@@ -403,8 +403,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "envit-cli"
-version = "0.0.1"
+name = "envit"
+version = "0.1.0"
 dependencies = [
  "clap",
  "envit-core",
@@ -413,7 +413,7 @@ dependencies = [
 
 [[package]]
 name = "envit-core"
-version = "0.0.1"
+version = "0.1.0"
 dependencies = [
  "gix",
  "serde",
