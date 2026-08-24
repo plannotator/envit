@@ -1,0 +1,15 @@
+{
+  "repos": [
+    "rust-lang/cargo",
+    "toml-rs/toml",
+    "astral-sh/uv",
+    "GitoxideLabs/gitoxide",
+    "cargo-bins/reflink-copy",
+    "tesuji/junction",
+    "yoshuawuyts/fd-lock",
+    "al8n/fs4",
+    "jdx/mise",
+    "clap-rs/clap",
+    "agentskills/agentskills"
+  ]
+}

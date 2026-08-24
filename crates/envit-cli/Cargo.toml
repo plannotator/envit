@@ -1,0 +1,18 @@
+[package]
+name = "envit-cli"
+description = "Thin CLI over envit-core."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[[bin]]
+name = "envit"
+path = "src/main.rs"
+
+[dependencies]
+envit-core.workspace = true
+clap.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true

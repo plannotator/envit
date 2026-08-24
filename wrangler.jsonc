@@ -1,0 +1,13 @@
+// Cloudflare Workers static assets: serves ./site at the edge.
+// Deploy: npx wrangler deploy   (then attach the envit.dev custom domain
+// in the Cloudflare dashboard or with `wrangler domains`).
+{
+  "name": "envit-site",
+  "compatibility_date": "2026-08-24",
+  "assets": {
+    "directory": "./site"
+  },
+  "routes": [
+    { "pattern": "envit.dev", "custom_domain": true }
+  ]
+}

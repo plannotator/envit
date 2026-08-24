@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "repos": [
+    {
+      "name": "agentskills",
+      "source": "https://github.com/agentskills/agentskills.git",
+      "ref": "HEAD",
+      "commit": "69ef37e9424c0a7ea9dd2293b559e43ec8176379"
+    },
+    {
+      "name": "cargo",
+      "source": "https://github.com/rust-lang/cargo.git",
+      "ref": "HEAD",
+      "commit": "ed4cb4fe45e6268fbb9bfbecfb207d98321019a0"
+    },
+    {
+      "name": "clap",
+      "source": "https://github.com/clap-rs/clap.git",
+      "ref": "HEAD",
+      "commit": "6982fb1c98c7247e38a6d4f04191b94e30497e7b"
+    },
+    {
+      "name": "fd-lock",
+      "source": "https://github.com/yoshuawuyts/fd-lock.git",
+      "ref": "HEAD",
+      "commit": "f4d076ba773397f99b696447cd9cff67cccdf3c5"
+    },
+    {
+      "name": "fs4",
+      "source": "https://github.com/al8n/fs4.git",
+      "ref": "HEAD",
+      "commit": "5f81cf254d3e1db4a98a9a49723b7405a4d3e383"
+    },
+    {
+      "name": "gitoxide",
+      "source": "https://github.com/GitoxideLabs/gitoxide.git",
+      "ref": "HEAD",
+      "commit": "fbebed746e296be64d5607e0a75b5a4e08cf4413"
+    },
+    {
+      "name": "junction",
+      "source": "https://github.com/tesuji/junction.git",
+      "ref": "HEAD",
+      "commit": "8120513d461b5a5032a93b1808bbe922686ebb00"
+    },
+    {
+      "name": "mise",
+      "source": "https://github.com/jdx/mise.git",
+      "ref": "HEAD",
+      "commit": "62476b46eea639f4bd91a26ca897cbe94866f708"
+    },
+    {
+      "name": "reflink-copy",
+      "source": "https://github.com/cargo-bins/reflink-copy.git",
+      "ref": "HEAD",
+      "commit": "eb46449f935d2455a036c5ccd36d39ab95c30d4e"
+    },
+    {
+      "name": "toml",
+      "source": "https://github.com/toml-rs/toml.git",
+      "ref": "HEAD",
+      "commit": "f42dcad6146460b98b4dd74faaa12a7b33f6a41e"
+    },
+    {
+      "name": "uv",
+      "source": "https://github.com/astral-sh/uv.git",
+      "ref": "HEAD",
+      "commit": "26a9dd4b2125bc271b47855e1fa0c49af3365db5"
+    }
+  ]
+}

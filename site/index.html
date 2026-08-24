@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>envit</title>
+<meta name="description" content="Declarative repository context and skills for agents on your local or cloud machines. One JSON file, one command, commit-pinned, shared machine-wide.">
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1b1b1b;
+    --dim: #6a6a6a;
+    --line: #e4e4e4;
+    --code-bg: #f6f6f4;
+    --link: #0b63ce;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121212;
+      --fg: #dcdcdc;
+      --dim: #909090;
+      --line: #2b2b2b;
+      --code-bg: #1b1b1b;
+      --link: #6aa9f4;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  main { max-width: 42rem; margin: 0 auto; padding: 4rem 1.25rem 4rem; }
+  h1 { font-size: 1.5rem; font-weight: 650; margin: 0 0 0.25rem; letter-spacing: -0.01em; }
+  .tagline { color: var(--dim); margin: 0 0 2rem; }
+  h2 { font-size: 1.05rem; font-weight: 650; margin: 2.5rem 0 0.6rem; }
+  p { margin: 0.6rem 0; }
+  a { color: var(--link); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 0.85rem 1rem;
+    overflow-x: auto;
+    font: 13px/1.6 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    margin: 0.8rem 0;
+  }
+  code {
+    font: 0.875em ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    background: var(--code-bg);
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+  }
+  pre code { background: none; padding: 0; font-size: inherit; }
+  pre a { color: inherit; text-decoration: none; }
+  pre a:hover { color: var(--link); text-decoration: underline; }
+  .comment { color: var(--dim); }
+  ul { padding-left: 1.2rem; margin: 0.6rem 0; }
+  li { margin: 0.3rem 0; }
+  table { border-collapse: collapse; width: 100%; margin: 0.8rem 0; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 0.35rem 0.75rem 0.35rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-weight: 650; color: var(--dim); font-size: 0.8rem; }
+  td:first-child { white-space: nowrap; }
+  .filecap { font: 0.75rem ui-monospace, "SF Mono", Menlo, monospace; color: var(--dim); margin: 1rem 0 -0.5rem; }
+  .install { margin: 0 0 2rem; }
+  .tabs { display: flex; gap: 0.25rem; margin-bottom: -1px; }
+  .tabs button {
+    font: 0.8rem/1 system-ui, -apple-system, "Segoe UI", sans-serif;
+    padding: 0.45rem 0.8rem;
+    background: none;
+    border: 1px solid transparent;
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    color: var(--dim);
+    cursor: pointer;
+  }
+  .tabs button[aria-selected="true"] {
+    color: var(--fg);
+    background: var(--code-bg);
+    border-color: var(--line);
+  }
+  .install .pane { position: relative; display: none; }
+  .install .pane.active { display: block; }
+  .install pre { margin: 0; border-radius: 0 6px 6px 6px; padding-right: 3rem; }
+  .copy {
+    position: absolute; top: 0.5rem; right: 0.5rem;
+    background: none; border: none; cursor: pointer;
+    color: var(--dim); padding: 0.3rem; border-radius: 4px;
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font: 0.75rem system-ui, sans-serif;
+  }
+  .copy:hover { color: var(--fg); background: var(--line); }
+  .copy svg { width: 14px; height: 14px; }
+  footer {
+    margin-top: 3.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line);
+    color: var(--dim);
+    font-size: 0.875rem;
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>envit</h1>
+  <p class="tagline">Declarative repository context and skills for agents on your local or cloud machines.</p>
+
+  <p class="filecap">envit.json</p>
+<pre><code>{
+  "repos": [
+    "<a href="https://github.com/sqlite/sqlite" target="_blank" rel="noopener">sqlite/sqlite</a>",
+    "<a href="https://github.com/PostHog/posthog-js" target="_blank" rel="noopener">PostHog/posthog-js</a>",
+    "<a href="https://github.com/getsentry/sentry-javascript" target="_blank" rel="noopener">getsentry/sentry-javascript</a>",
+    "<a href="https://github.com/earendil-works/pi" target="_blank" rel="noopener">earendil-works/pi</a>"
+  ],
+  "skills": {
+    "<a href="https://github.com/mattpocock/skills" target="_blank" rel="noopener">mattpocock/skills</a>": ["grill-me", "grilling"],
+    "<a href="https://github.com/emilkowalski/skills" target="_blank" rel="noopener">emilkowalski/skills</a>": "*",
+    "<a href="https://github.com/remotion-dev/skills" target="_blank" rel="noopener">remotion-dev/skills</a>": "*",
+    "<a href="https://github.com/dmmulroy/anti-slop" target="_blank" rel="noopener">dmmulroy/anti-slop</a>": "*",
+    "<a href="https://github.com/cursor/plugins" target="_blank" rel="noopener">cursor/plugins</a>": { "path": "pstack", "pick": ["interrogate", "blast-radius"] },
+    "<a href="https://github.com/backnotprop/bro" target="_blank" rel="noopener">backnotprop/bro</a>": "bro",
+    "<a href="https://github.com/obra/superpowers" target="_blank" rel="noopener">obra/superpowers</a>": "*"
+  }
+}</code></pre>
+
+  <p>Config file: external repos that your agents can use as context,
+  and skills that they can use.</p>
+
+  <div class="install">
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-pane="curl">curl</button>
+      <button role="tab" aria-selected="false" data-pane="brew">brew</button>
+      <button role="tab" aria-selected="false" data-pane="cargo">cargo</button>
+      <button role="tab" aria-selected="false" data-pane="npm">npm</button>
+    </div>
+    <div class="pane active" id="pane-curl">
+      <pre><code>curl -fsSL https://envit.dev/install.sh | sh</code></pre>
+      <button class="copy" aria-label="Copy"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 5.5v-2a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3.5v5A1.5 1.5 0 0 0 4 10h1.5"/></svg></button>
+    </div>
+    <div class="pane" id="pane-brew">
+      <pre><code>brew install envit</code></pre>
+      <button class="copy" aria-label="Copy"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 5.5v-2a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3.5v5A1.5 1.5 0 0 0 4 10h1.5"/></svg></button>
+    </div>
+    <div class="pane" id="pane-cargo">
+      <pre><code>cargo install envit</code></pre>
+      <button class="copy" aria-label="Copy"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 5.5v-2a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3.5v5A1.5 1.5 0 0 0 4 10h1.5"/></svg></button>
+    </div>
+    <div class="pane" id="pane-npm">
+      <pre><code>npm install -g envit</code></pre>
+      <button class="copy" aria-label="Copy"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 5.5v-2a1.5 1.5 0 0 0-1.5-1.5H4A1.5 1.5 0 0 0 2.5 3.5v5A1.5 1.5 0 0 0 4 10h1.5"/></svg></button>
+    </div>
+  </div>
+
+  <table>
+    <tr><th>scope</th><th></th></tr>
+    <tr><td><code>envit init</code></td><td>This project. Writes <code>envit.json</code> for the repo. Commit it: teammates, CI, and cloud agents reproduce the same context.</td></tr>
+    <tr><td><code>envit init -g</code></td><td>This machine. Writes <code>~/.envit/envit.json</code>. Skills land in <code>~/.agents/skills/</code> and <code>~/.claude/skills/</code>, for every project.</td></tr>
+    <tr><td><code>envit sync</code></td><td>Materializes both scopes. Output labels each global line.</td></tr>
+  </table>
+
+<pre><code>$ envit sync
+fetched  sqlite  1b3f6d2a94c0  3184 files · 94.2 MB
+fetched  posthog-js  9c41d2e807aa  2311 files · 18.7 MB
+fetched  sentry-javascript  4b0e91cc35d8  3928 files · 24.1 MB
+fetched  pi  77aa10f3d92b  612 files · 4.8 MB
+skill    grill-me  e1f0a9b62c44  (mattpocock/skills)
+skill    grilling  e1f0a9b62c44  (mattpocock/skills)
+global   bro  0537a9fc42c0  (backnotprop/bro)
+✓ synced 4 repo(s) · 45 skill(s) · 1 global skill(s) · 141.8 MB added to store
+
+$ envit sync
+✓ synced 4 repo(s) · store unchanged   <span class="comment"># 9 ms</span></code></pre>
+
+  <h2>What agents see</h2>
+
+  <p>Skills need no explanation to the agent. They land where every agent
+  already looks, and load like any other skill.</p>
+
+  <p><b>Repos</b></p>
+
+<pre><code>my-app/
+├── .agents/skills/grill-me/     <span class="comment"># agents discover skills here natively</span>
+├── .claude/skills/grill-me/     <span class="comment"># Claude Code reads its own dir</span>
+└── .envit/
+    ├── AGENTS.md                <span class="comment"># generated inventory: what is here, at which commit</span>
+    ├── CLAUDE.md → AGENTS.md    <span class="comment"># symlink, so Claude Code reads it natively</span>
+    └── repos/
+        ├── sqlite/              <span class="comment"># full source, read-only</span>
+        └── posthog-js/</code></pre>
+
+  <p>Repo context announces itself the same way. Each sync generates
+  <code>.envit/AGENTS.md</code> with a <code>CLAUDE.md</code> symlink
+  beside it. The file lists each repo, its commit, and its resolved path.
+  When an agent enters the directory, it reads the inventory the way it
+  reads any <code>AGENTS.md</code>.</p>
+
+  <h2>1. Repo context</h2>
+
+  <p>Declare repos in <code>envit.json</code>:</p>
+
+<pre><code>{
+  "repos": [
+    "PostHog/posthog-js",
+    "gitlab:group/internal-lib",
+    { "source": "getsentry/sentry-javascript", "ref": "9.44.0", "update": "frozen" }
+  ]
+}</code></pre>
+
+  <p><code>envit sync</code> writes the source to
+  <code>.envit/repos/</code>. The checkouts are read-only, at the commits
+  that <code>envit.lock.json</code> records. Commit both files. Then any
+  machine reproduces the same context:</p>
+
+<pre><code>$ envit sync --frozen   <span class="comment"># CI / sandboxes: lockfile only, bit-identical</span></code></pre>
+
+  <h2>2. Skills</h2>
+
+  <p>Pick single skills from any repo, as the manifest above shows. You
+  do not install a full collection.</p>
+
+  <p><code>sync</code> links each skill into
+  <code>.agents/skills/</code> (the
+  <a href="https://agentskills.io">cross-agent convention</a>) and
+  <code>.claude/skills/</code>. A global manifest at
+  <code>~/.envit/envit.json</code> applies skills to every project on the
+  machine:</p>
+
+<pre><code>$ envit init -g
+$ envit sync -g
+global   web-design-guidelines  dd089a8c752c  (vercel-labs/agent-skills)</code></pre>
+
+  <h2>On disk</h2>
+
+<pre><code>~/.envit/store/
+├── git/github.com/tokio-rs/tokio.git      <span class="comment"># one bare repo per remote</span>
+└── checkouts/github.com/tokio-rs/tokio/
+    └── a1b2c3d4e5f6…/                     <span class="comment"># one read-only tree per commit</span>
+
+my-app/.envit/repos/tokio  →  ~/.envit/store/checkouts/…/a1b2c3d4e5f6…/</code></pre>
+
+  <p>The store keys each checkout by commit SHA. Two projects on the same
+  commit share the same bytes. When a branch moves upstream, the contents
+  of a project do not change. An update is one atomic symlink flip.</p>
+
+  <h2>Commands</h2>
+
+  <table>
+    <tr><th>command</th><th></th></tr>
+    <tr><td><code>envit sync</code></td><td>resolve → fetch → checkout → link → lock. Refreshes branch-tracking repos at most once per 24 h.</td></tr>
+    <tr><td><code>envit sync --frozen</code></td><td>lockfile only. Errors on drift. For CI and sandboxes.</td></tr>
+    <tr><td><code>envit sync --offline</code></td><td>no network. Links what the store has.</td></tr>
+    <tr><td><code>envit add &lt;source&gt;</code></td><td><code>owner/repo</code>, <code>gitlab:…</code>, any https git URL. <code>--ref</code> for branch/tag/sha.</td></tr>
+    <tr><td><code>envit update [name]</code></td><td>move branch-tracking repos to current remote heads. Prints <code>old → new</code>.</td></tr>
+    <tr><td><code>envit pin &lt;name&gt;</code></td><td>freeze at the locked commit. <code>unpin</code> resumes tracking.</td></tr>
+    <tr><td><code>envit status</code></td><td>ref, commit, link health, staleness. Never touches the network.</td></tr>
+    <tr><td><code>envit skills</code></td><td>declared skills, both scopes.</td></tr>
+    <tr><td><code>envit gc</code></td><td>delete checkouts no project references. <code>--dry-run</code> first.</td></tr>
+  </table>
+
+  <h2>Constraints</h2>
+
+  <ul>
+    <li>No daemon. <code>ps</code> shows nothing between invocations.</li>
+    <li>One static binary, 4 MB. Git is embedded
+    (<a href="https://github.com/GitoxideLabs/gitoxide">gitoxide</a>):
+    no system git, no libgit2, no OpenSSL.</li>
+    <li>Plain git protocol. GitHub, GitLab, Codeberg, sourcehut,
+    self-hosted. No forge APIs.</li>
+    <li>Kill switches: <code>--offline</code>, <code>--frozen</code>,
+    <code>ENVIT_NO_REFRESH=1</code>, <code>"update": "frozen"</code>.</li>
+    <li>Everything on disk is inspectable: bare git repos, directories,
+    JSON, symlinks.</li>
+  </ul>
+
+  <h2>Install</h2>
+
+  <p>envit is pre-release. Build it from source with a stock Rust toolchain:</p>
+
+<pre><code>$ git clone https://github.com/plannotator/envit &amp;&amp; cd envit
+$ cargo build --release
+$ ./target/release/envit --help</code></pre>
+
+  <footer>
+    MIT OR Apache-2.0
+  </footer>
+</main>
+<script>
+  document.querySelectorAll('.tabs button').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      document.querySelectorAll('.tabs button').forEach(function (b) { b.setAttribute('aria-selected', 'false'); });
+      document.querySelectorAll('.install .pane').forEach(function (p) { p.classList.remove('active'); });
+      tab.setAttribute('aria-selected', 'true');
+      document.getElementById('pane-' + tab.dataset.pane).classList.add('active');
+    });
+  });
+  document.querySelectorAll('.copy').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var text = btn.parentElement.querySelector('code').textContent;
+      navigator.clipboard.writeText(text).then(function () {
+        var orig = btn.innerHTML;
+        btn.textContent = 'copied';
+        setTimeout(function () { btn.innerHTML = orig; }, 1200);
+      });
+    });
+  });
+</script>
+</body>
+</html>

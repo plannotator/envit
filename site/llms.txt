@@ -1,0 +1,35 @@
+# envit
+
+> Declarative repository context and skills for coding agents. A committed
+> envit.json declares the external repos an agent can read and the skills
+> it loads. One command materializes both: commit-pinned, read-only,
+> stored once per machine in a content-addressed store, reproducible in
+> any environment from the lockfile.
+
+envit is a single static Rust binary. Git is embedded (gitoxide): no
+system git, no daemons, plain git protocol against any forge. Repos
+appear under .envit/repos/ as symlinks into the machine store. Skills
+land in .agents/skills/ and .claude/skills/. A generated .envit/AGENTS.md
+(with a CLAUDE.md symlink) inventories the context for agents.
+
+Core commands: envit init | add | sync [--frozen|--offline] | update |
+pin | unpin | skills | status | gc. Global scope: envit init -g writes
+~/.envit/envit.json; skills apply to every project on the machine.
+
+## Docs
+
+- [Landing page](https://envit.dev/): manifest format, commands, on-disk
+  layout, constraints
+- [Agent skill](https://github.com/plannotator/envit/tree/main/skills/envit):
+  teaches an agent how to use envit
+
+## Install
+
+- [Unix install script](https://envit.dev/install.sh): detects OS/arch,
+  installs the latest GitHub release
+- [Windows](https://envit.dev/install.ps1): pending; use WSL today
+
+## Source
+
+- [Repository](https://github.com/plannotator/envit): Rust workspace,
+  MIT OR Apache-2.0
