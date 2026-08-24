@@ -1,2 +1,5 @@
 /target
 .envit/
+
+# release binaries staged for npm publish
+packages/npm/*/bin/envit
