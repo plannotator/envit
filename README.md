@@ -112,7 +112,11 @@ https://envit.dev/security. Report vulnerabilities privately through
 ## Agent skill
 
 `skills/envit/` is an [Agent Skill](https://agentskills.io) that teaches an
-agent how to use envit.
+agent how to use envit. Install it into a project or globally:
+
+```sh
+npx skills add plannotator/envit
+```
 
 ## License
 
