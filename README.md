@@ -14,7 +14,8 @@ cloud machines. Site: https://envit.dev
     "PostHog/posthog-js",
     "getsentry/sentry-javascript",
     "earendil-works/pi",
-    "pierrecomputer/pierre"
+    "pierrecomputer/pierre",
+    "cloudflare/cloudflare-os"
   ],
   "skills": {
     "mattpocock/skills": ["grill-me", "grilling"],
