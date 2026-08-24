@@ -22,6 +22,8 @@ pin | unpin | skills | status | gc. Global scope: envit init -g writes
   layout, constraints
 - [Agent skill](https://github.com/plannotator/envit/tree/main/skills/envit):
   teaches an agent how to use envit
+- [Security](https://envit.dev/security): network and filesystem
+  boundaries, release verification, vulnerability reporting
 
 ## Install
 

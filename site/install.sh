@@ -35,6 +35,13 @@ if [ -f "$tmp/envit.tar.gz.sha256" ] && command -v shasum >/dev/null 2>&1; then
   }
 fi
 
+if command -v gh >/dev/null 2>&1; then
+  # Provenance: proves the tarball was built by plannotator/envit's release workflow.
+  gh attestation verify "$tmp/envit.tar.gz" --owner plannotator >/dev/null 2>&1 \
+    && echo "provenance verified (GitHub attestation)" \
+    || echo "note: provenance not verified (gh attestation verify failed or unavailable)"
+fi
+
 tar -xzf "$tmp/envit.tar.gz" -C "$tmp"
 mkdir -p "$INSTALL_DIR"
 install -m 755 "$tmp/envit" "$INSTALL_DIR/envit"

@@ -1,3 +1,4 @@
+#![forbid(unsafe_code)]
 //! # envit-core
 //!
 //! All product logic for envit (working name — see PRD §19 Q1).

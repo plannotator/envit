@@ -12,7 +12,7 @@ authors = ["Michael Ramos"]
 # Shared dependency versions live here as crates start needing them
 # (gix, etc. — added when first used, not before).
 [workspace.dependencies]
-envit-core = { path = "crates/envit-core" }
+envit-core = { path = "crates/envit-core", version = "0.0.1" }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["preserve_order"] }
 thiserror = "2"

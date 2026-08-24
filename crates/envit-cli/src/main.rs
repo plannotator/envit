@@ -1,3 +1,4 @@
+#![forbid(unsafe_code)]
 use envit_core::manifest::{Manifest, NewRepo};
 use envit_core::{ident, project};
 use clap::{Parser, Subcommand};
