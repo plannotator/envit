@@ -180,3 +180,40 @@ fn source_expansion_and_default_names() {
         assert!(source::expand(bad).is_err(), "{bad} should be rejected");
     }
 }
+
+#[test]
+fn init_notes_envit_in_existing_agent_files() {
+    let dir = tempfile::tempdir().unwrap();
+    let root = dir.path();
+    std::fs::write(root.join("AGENTS.md"), "# My project\n\nDo things.\n").unwrap();
+    std::fs::write(root.join("CLAUDE.md"), "Keep it simple.").unwrap(); // no trailing newline
+
+    let written = project::inject_agent_notes(root).unwrap();
+    assert_eq!(written, ["AGENTS.md", "CLAUDE.md"]);
+    let a = std::fs::read_to_string(root.join("AGENTS.md")).unwrap();
+    assert!(a.starts_with("# My project"), "user content stays first");
+    assert!(a.contains("<!-- envit:begin -->") && a.contains("## envit: repo context"));
+    assert!(a.contains(".envit/repos/<name>/"));
+    let c = std::fs::read_to_string(root.join("CLAUDE.md")).unwrap();
+    assert!(c.starts_with("Keep it simple.\n\n<!-- envit:begin -->"), "{c}");
+
+    // Idempotent: a second pass writes nothing and duplicates nothing.
+    let written = project::inject_agent_notes(root).unwrap();
+    assert!(written.is_empty());
+    let a2 = std::fs::read_to_string(root.join("AGENTS.md")).unwrap();
+    assert_eq!(a2.matches("envit:begin").count(), 1);
+
+    // A stale block is replaced in place, user text after it preserved.
+    let stale = a2.replace("## envit: repo context", "## old note") + "\nTrailing user note.\n";
+    std::fs::write(root.join("AGENTS.md"), stale).unwrap();
+    project::inject_agent_notes(root).unwrap();
+    let a3 = std::fs::read_to_string(root.join("AGENTS.md")).unwrap();
+    assert!(a3.contains("## envit: repo context") && !a3.contains("## old note"));
+    assert!(a3.ends_with("Trailing user note.\n"), "{a3}");
+
+    // Absent files are never created.
+    let empty = tempfile::tempdir().unwrap();
+    assert!(project::inject_agent_notes(empty.path()).unwrap().is_empty());
+    assert!(!empty.path().join("AGENTS.md").exists());
+}
+
