@@ -140,6 +140,9 @@ fn run(
 
     lock.save(project_root)?;
     write_agents_md(project_root, &entries, &repos)?;
+    if manifest.agents_md_enabled() {
+        crate::project::inject_agent_notes(project_root)?;
+    }
     store.register_project(project_root)?;
 
     Ok(SyncReport { repos, skills })

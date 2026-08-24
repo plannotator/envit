@@ -62,3 +62,65 @@ fn ensure_gitignored(dir: &Path) -> Result<bool, Error> {
     std::fs::write(&path, out)?;
     Ok(true)
 }
+
+const NOTE_BEGIN: &str = "<!-- envit:begin -->";
+const NOTE_END: &str = "<!-- envit:end -->";
+
+/// The note envit maintains inside a project's `AGENTS.md` / `CLAUDE.md`.
+fn agent_note() -> String {
+    format!(
+        "{NOTE_BEGIN}\n\
+## envit: repo context\n\
+\n\
+Additional context is available in `{dir}/`. The source of each external\n\
+repository declared in `{manifest}` is at `{dir}/repos/<name>/`, read-only,\n\
+at a pinned commit. Read `{dir}/AGENTS.md` for the inventory.\n\
+\n\
+When you work with a dependency, read its actual code there instead of\n\
+guessing from memory. The entries are symlinks: use `rg --follow` or\n\
+`fd -L` when you search them.\n\
+{NOTE_END}\n",
+        dir = ident::CONTEXT_DIR,
+        manifest = ident::MANIFEST_FILE,
+    )
+}
+
+/// Add or refresh the envit note at the bottom of `AGENTS.md` and
+/// `CLAUDE.md` when those files exist in `root`. Never creates them.
+/// Idempotent: the fenced block is replaced in place, never duplicated.
+/// Returns the filenames that were written.
+pub fn inject_agent_notes(root: &Path) -> Result<Vec<String>, Error> {
+    let note = agent_note();
+    let mut written = Vec::new();
+    for name in ["AGENTS.md", "CLAUDE.md"] {
+        let path = root.join(name);
+        if !path.is_file() || std::fs::read_link(&path).is_ok() {
+            continue; // absent, or a symlink (e.g. CLAUDE.md -> AGENTS.md)
+        }
+        let text = std::fs::read_to_string(&path)?;
+        let updated = match (text.find(NOTE_BEGIN), text.find(NOTE_END)) {
+            (Some(b), Some(e)) if e > b => {
+                let end = e + NOTE_END.len();
+                let tail = text[end..].trim_start_matches('\n');
+                format!("{}{}{}", &text[..b], note, if tail.is_empty() { String::new() } else { format!("\n{tail}") })
+            }
+            _ => {
+                let mut s = text.clone();
+                if !s.is_empty() && !s.ends_with('\n') {
+                    s.push('\n');
+                }
+                if !s.is_empty() {
+                    s.push('\n');
+                }
+                s.push_str(&note);
+                s
+            }
+        };
+        if updated != text {
+            std::fs::write(&path, updated)?;
+            written.push(name.to_string());
+        }
+    }
+    Ok(written)
+}
+

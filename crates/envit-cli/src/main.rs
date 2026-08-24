@@ -111,6 +111,9 @@ fn run(cli: Cli) -> Result<(), envit_core::Error> {
                 if report.gitignore_updated {
                     println!("✓ added {}/ to .gitignore", ident::CONTEXT_DIR);
                 }
+                for f in project::inject_agent_notes(&cwd)? {
+                    println!("✓ noted envit context in {f}");
+                }
             }
         }
         Cmd::Add { source, git_ref, name, sparse } => {

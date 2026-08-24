@@ -122,6 +122,11 @@ impl Manifest {
         &self.path
     }
 
+    /// `"agentsMd": false` disables the note envit keeps in AGENTS.md / CLAUDE.md.
+    pub fn agents_md_enabled(&self) -> bool {
+        self.doc.get("agentsMd").and_then(Value::as_bool).unwrap_or(true)
+    }
+
     pub fn repo_names(&self) -> Vec<String> {
         self.entries().into_iter().map(|e| e.name).collect()
     }

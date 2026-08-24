@@ -196,7 +196,10 @@ $ envit sync
   <code>.envit/AGENTS.md</code> with a <code>CLAUDE.md</code> symlink
   beside it. The file lists each repo, its commit, and its resolved path.
   When an agent enters the directory, it reads the inventory the way it
-  reads any <code>AGENTS.md</code>.</p>
+  reads any <code>AGENTS.md</code>. If the project root already has an
+  <code>AGENTS.md</code> or <code>CLAUDE.md</code>, <code>init</code> and
+  <code>sync</code> append a short fenced note that points there. Set
+  <code>"agentsMd": false</code> in <code>envit.json</code> to opt out.</p>
 
   <h2>1. Repo context</h2>
 
