@@ -216,9 +216,9 @@ $ envit sync
 └── .envit/
     ├── AGENTS.md                <span class="comment"># generated inventory: what is here, at which commit</span>
     ├── CLAUDE.md → AGENTS.md    <span class="comment"># symlink, so Claude Code reads it natively</span>
-    └── repos/                   <span class="comment"># symlinks into ~/.envit/store, one copy per machine</span>
-        ├── sqlite/              <span class="comment"># full source, read-only</span>
-        └── posthog-js/</code></pre>
+    └── repos/
+        ├── sqlite → ~/.envit/store/…/sqlite/&lt;commit&gt;/        <span class="comment"># symlink; full source, read-only</span>
+        └── posthog-js → ~/.envit/store/…/posthog-js/&lt;commit&gt;/</code></pre>
 
   <p>Repo context announces itself the same way. Each sync generates
   <code>.envit/AGENTS.md</code> with a <code>CLAUDE.md</code> symlink
