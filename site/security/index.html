@@ -33,31 +33,66 @@
   <h1><a href="/" style="color:inherit">envit</a> security</h1>
   <p class="tagline">What envit contacts, what it writes, how releases are verified.</p>
 
-  <h2>Network</h2>
+  <ul>
+    <li><a href="#supply-chain">Supply chain</a></li>
+    <li><a href="#network">Network</a></li>
+    <li><a href="#filesystem">Filesystem</a></li>
+    <li><a href="#skills">Skills are instructions</a></li>
+    <li><a href="#report">Report a vulnerability</a></li>
+  </ul>
 
-  <p>envit contacts only the git remotes that your manifests declare. It
-  fetches over the plain git protocol (HTTPS, or <code>file://</code>)
-  with an embedded git implementation. It sends no telemetry, checks for
-  no updates, opens no ports, and calls no forge API.</p>
+  <h2 id="supply-chain">Supply chain</h2>
+
+  <p>Every release binary is built by a public GitHub Actions workflow
+  from a version tag. You can check where a binary came from.</p>
+
+  <table>
+    <tr><th>control</th><th>what it gives you</th></tr>
+    <tr><td>Build provenance</td><td>Each release asset has a signed GitHub attestation that names the workflow, commit, and tag that built it.</td></tr>
+    <tr><td>SHA-256 checksums</td><td>One checksum file per asset. The install script checks it.</td></tr>
+    <tr><td>SBOM</td><td>A CycloneDX inventory of every dependency in the build, attested and attached to the release.</td></tr>
+    <tr><td>Pinned workflow actions</td><td>Every action is pinned to a commit SHA. A tag cannot be moved under us.</td></tr>
+    <tr><td><code>cargo deny</code></td><td>Runs on every push. Fails on known advisories, unapproved licenses, wildcard dependencies, and unknown sources.</td></tr>
+    <tr><td>zizmor</td><td>Audits the workflows themselves on every push and weekly.</td></tr>
+    <tr><td>gitleaks</td><td>Scans the full git history for secrets on every push and weekly.</td></tr>
+    <tr><td>Dependabot</td><td>Weekly update PRs for Cargo and Actions. Security alerts on.</td></tr>
+    <tr><td><code>#![forbid(unsafe_code)]</code></td><td>No unsafe Rust in envit. The embedded git and HTTP stacks are third-party crates and carry their own audits.</td></tr>
+  </table>
+
+  <p>Verify a downloaded asset:</p>
+
+<pre><code>gh attestation verify envit-aarch64-apple-darwin.tar.gz --owner plannotator</code></pre>
+
+  <p>The install script runs this check when the GitHub CLI is present and
+  reports the result. It always checks the SHA-256.</p>
+
+  <p>Workflow source:
+  <a href="https://github.com/plannotator/envit/tree/main/.github/workflows">.github/workflows</a>.</p>
+
+  <h2 id="network">Network</h2>
+
+  <p>envit contacts only the git remotes in your manifests. It uses the
+  plain git protocol over HTTPS with an embedded git implementation. No
+  telemetry. No update checks. No open ports. No forge APIs.</p>
 
   <table>
     <tr><th>request</th><th>when</th></tr>
-    <tr><td>git fetch to a declared remote</td><td><code>sync</code> for a repo or skill with no usable checkout in the store, or a stale <code>auto</code> repo (at most once per 24 h), or <code>update</code></td></tr>
-    <tr><td>nothing</td><td><code>sync --offline</code>, <code>sync --frozen</code> with a warm store, <code>status</code>, <code>skills</code>, <code>pin</code>, <code>gc</code></td></tr>
+    <tr><td>git fetch to a declared remote</td><td><code>sync</code> when the store lacks the checkout, or a stale <code>auto</code> repo (at most once per 24 h), or <code>update</code></td></tr>
+    <tr><td>none</td><td><code>sync --offline</code>, <code>sync --frozen</code> with a warm store, <code>status</code>, <code>skills</code>, <code>pin</code>, <code>gc</code></td></tr>
   </table>
 
-  <p>Set <code>ENVIT_NO_REFRESH=1</code> to block every implicit fetch.
+  <p><code>ENVIT_NO_REFRESH=1</code> blocks every implicit fetch.
   <code>sync --offline</code> guarantees no network for one run.</p>
 
-  <h2>Filesystem</h2>
+  <h2 id="filesystem">Filesystem</h2>
 
   <p>Every path envit writes, and how to undo it.</p>
 
   <table>
     <tr><th>path</th><th>what</th><th>undo</th></tr>
-    <tr><td><code>~/.envit/</code></td><td>the store: bare git repos, read-only checkouts keyed by commit, locks, the project registry, and the optional global manifest</td><td><code>envit gc</code> removes unreferenced checkouts; delete the directory to reset everything</td></tr>
+    <tr><td><code>~/.envit/</code></td><td>the store: bare git repos, read-only checkouts keyed by commit, locks, the project registry, the optional global manifest</td><td><code>envit gc</code> removes unreferenced checkouts; delete the directory to reset</td></tr>
     <tr><td><code>envit.json</code>, <code>envit.lock.json</code></td><td>your manifest and lock, in the project root</td><td>yours; edit or delete</td></tr>
-    <tr><td><code>.envit/</code></td><td>symlinks to store checkouts, a generated <code>AGENTS.md</code>, a <code>CLAUDE.md</code> symlink to it</td><td>gitignored; delete the directory</td></tr>
+    <tr><td><code>.envit/</code></td><td>symlinks into the store, a generated <code>AGENTS.md</code>, a <code>CLAUDE.md</code> symlink to it</td><td>gitignored; delete the directory</td></tr>
     <tr><td><code>.agents/skills/&lt;name&gt;</code>, <code>.claude/skills/&lt;name&gt;</code></td><td>one symlink per declared skill (a managed copy when <code>modelInvocable</code> is set)</td><td>remove the skill from the manifest; <code>sync</code> prunes only entries it created</td></tr>
     <tr><td><code>~/.agents/skills/</code>, <code>~/.claude/skills/</code></td><td>the same, for the global manifest</td><td>same</td></tr>
     <tr><td><code>AGENTS.md</code>, <code>CLAUDE.md</code> in the project root</td><td>a fenced note between <code>&lt;!-- envit:begin --&gt;</code> and <code>&lt;!-- envit:end --&gt;</code>, only when the file already exists</td><td>set <code>"agentsMd": false</code>, or delete the block</td></tr>
@@ -68,51 +103,33 @@
   <code>AGENTS.md</code> or <code>CLAUDE.md</code>, and never deletes a
   symlink or directory it did not create.</p>
 
-  <h2>Skills are instructions</h2>
+  <h2 id="skills">Skills are instructions</h2>
 
-  <p>A skill is text that an agent will follow. Treat a skills source like
-  a dependency with the ability to run code. envit gives you three
-  controls:</p>
+  <p>A skill is text an agent will follow. Treat a skills source like a
+  dependency that can run code. envit gives you three controls.</p>
 
   <ul>
-    <li><b>Pinned.</b> Every skill is materialized at the commit recorded
-    in <code>envit.lock.json</code>. It cannot change between syncs.
-    Only <code>update</code> moves it, and <code>update</code> prints the
-    old and new commits.</li>
+    <li><b>Pinned.</b> Every skill is materialized at the commit in
+    <code>envit.lock.json</code>. It cannot change between syncs. Only
+    <code>update</code> moves it, and <code>update</code> prints the old
+    and new commits.</li>
     <li><b>Reproducible.</b> <code>sync --frozen</code> installs exactly
-    the reviewed commits, on any machine, or fails.</li>
+    the reviewed commits on any machine, or fails.</li>
     <li><b>Selective.</b> You name each skill you take from a source.
     Nothing else from that repo lands where agents look.</li>
   </ul>
 
-  <p>Review a skills source before you add it. Pin it with
-  <code>"update": "frozen"</code> if you want no drift at all.</p>
+  <p>Read a skills source before you add it. Set
+  <code>"update": "frozen"</code> on it if you want no drift.</p>
 
-  <h2>Release integrity</h2>
-
-  <p>Release binaries are built by the public workflow in
-  <a href="https://github.com/plannotator/envit/tree/main/.github/workflows">.github/workflows/release.yml</a>
-  from a version tag. Each asset ships with a SHA-256 checksum and a
-  GitHub build-provenance attestation. The install script verifies the
-  checksum, and verifies provenance when the GitHub CLI is available.
-  Verify by hand:</p>
-
-<pre><code>gh attestation verify envit-aarch64-apple-darwin.tar.gz --owner plannotator</code></pre>
-
-  <p>The source is Rust with <code>#![forbid(unsafe_code)]</code> in both
-  crates. Continuous integration runs clippy with warnings as errors, the
-  full test suite on macOS and Linux, and <code>cargo deny</code> for
-  advisories, licenses, and sources. Actions are pinned by commit SHA.
-  Dependabot watches Cargo and Actions weekly.</p>
-
-  <h2>Report a vulnerability</h2>
+  <h2 id="report">Report a vulnerability</h2>
 
   <p>Do not open a public issue. Use
   <a href="https://github.com/plannotator/envit/security/advisories/new">GitHub's private reporting form</a>
-  with the affected version, reproduction steps, and impact. Fixes are
-  provided for the latest released version.</p>
+  with the affected version, steps to reproduce, and impact. Fixes go to
+  the latest released version.</p>
 
-  <p>Automated checks reduce risk; they do not prove the absence of
+  <p>These checks reduce risk. They do not prove the absence of
   vulnerabilities. envit claims no certification.</p>
 
   <footer>MIT OR Apache-2.0 · <a href="/">envit.dev</a></footer>
