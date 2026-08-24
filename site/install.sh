@@ -26,23 +26,26 @@ url="https://github.com/${REPO}/releases/latest/download/envit-${target}.tar.gz"
 tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 
+asset="envit-${target}.tar.gz"
 echo "downloading envit (${target})..."
-curl -fsSL "$url" -o "$tmp/envit.tar.gz"
-curl -fsSL "$url.sha256" -o "$tmp/envit.tar.gz.sha256" || true
-if [ -f "$tmp/envit.tar.gz.sha256" ] && command -v shasum >/dev/null 2>&1; then
-  (cd "$tmp" && shasum -a 256 -c envit.tar.gz.sha256 >/dev/null) || {
-    echo "error: checksum verification failed" >&2; exit 1;
-  }
+curl -fsSL "$url" -o "$tmp/$asset"
+curl -fsSL "$url.sha256" -o "$tmp/$asset.sha256" || true
+if [ -f "$tmp/$asset.sha256" ]; then
+  want=$(cut -d' ' -f1 "$tmp/$asset.sha256")
+  if command -v sha256sum >/dev/null 2>&1; then got=$(sha256sum "$tmp/$asset" | cut -d' ' -f1)
+  elif command -v shasum >/dev/null 2>&1; then got=$(shasum -a 256 "$tmp/$asset" | cut -d' ' -f1)
+  else got=$want; fi
+  [ "$want" = "$got" ] || { echo "error: checksum verification failed" >&2; exit 1; }
 fi
 
 if command -v gh >/dev/null 2>&1; then
   # Provenance: proves the tarball was built by plannotator/envit's release workflow.
-  gh attestation verify "$tmp/envit.tar.gz" --owner plannotator >/dev/null 2>&1 \
+  gh attestation verify "$tmp/$asset" --owner plannotator >/dev/null 2>&1 \
     && echo "provenance verified (GitHub attestation)" \
     || echo "note: provenance not verified (gh attestation verify failed or unavailable)"
 fi
 
-tar -xzf "$tmp/envit.tar.gz" -C "$tmp"
+tar -xzf "$tmp/$asset" -C "$tmp"
 mkdir -p "$INSTALL_DIR"
 install -m 755 "$tmp/envit" "$INSTALL_DIR/envit"
 
