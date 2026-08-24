@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#1b1b1b"/>
+  <g transform="translate(100 230)">
+    <rect x="0" y="16" width="44" height="44" rx="6" fill="#f6f6f4"/>
+    <path d="M44 38h24" stroke="#f6f6f4" stroke-width="8" stroke-linecap="round"/>
+    <rect x="68" y="16" width="42" height="44" rx="6" fill="none" stroke="#f6f6f4" stroke-width="8"/>
+  </g>
+  <text x="240" y="292" fill="#f6f6f4" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="104" font-weight="700" letter-spacing="-3">envit</text>
+  <text x="100" y="392" fill="#c8c8c8" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="34">Declarative repository context and skills for agents</text>
+  <text x="100" y="440" fill="#909090" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="34">on your local or cloud machines.</text>
+  <text x="100" y="548" fill="#6a6a6a" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="26">envit.dev</text>
+</svg>
