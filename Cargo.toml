@@ -1,0 +1,36 @@
+[workspace]
+resolver = "3"
+members = ["crates/envit-core", "crates/envit-cli"]
+
+[workspace.package]
+version = "0.0.1"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+repository = ""            # set when the repo is published
+authors = ["Michael Ramos"]
+
+# Shared dependency versions live here as crates start needing them
+# (gix, etc. — added when first used, not before).
+[workspace.dependencies]
+envit-core = { path = "crates/envit-core" }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+thiserror = "2"
+# Git engine (PRD §20 D2): gix baseline, tightly feature-gated — every
+# feature here must be justified by a call site.
+gix = { version = "0.86", default-features = false, features = [
+  "blocking-network-client",                 # fetch over git/file transports
+  "blocking-http-transport-curl-rustls",     # https; curl backend per D4 (reqwest backend is experimental, no proxy support)
+  "worktree-mutation",                       # tree -> directory extraction
+  "parallel",                                # multicore pack decode + checkout
+  "sha1",                                    # object hashing (not on by default sans defaults)
+  "max-performance-safe",                    # zlib + multicore without unsafe/C deps
+] }
+clap = { version = "4", features = ["derive"] }
+tempfile = "3"
+
+[profile.release]
+lto = "fat"            # whole-program LTO: smaller + faster; we ship rarely, compile time is fine
+codegen-units = 1      # better optimization, deterministic-ish binaries
+panic = "abort"        # a CLI has no one to catch a panic; drops unwind tables
+strip = true
