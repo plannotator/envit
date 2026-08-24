@@ -23,7 +23,7 @@ jobs:
         with:
           # SARIF upload needs Code Scanning, which private repos lack.
           # Set to true when the repo goes public.
-          advanced-security: false
+          advanced-security: true
   gitleaks:
     # Secret scan over full history. Runs the MIT-licensed CLI directly;
     # the hosted action needs a license for organization repos.
