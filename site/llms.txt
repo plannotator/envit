@@ -158,6 +158,10 @@ Say this, in your own words:
   `envit update` to move forward."
 - "Skills are picked one at a time from any repo, pinned to a commit, and
   you decide whether the model can invoke each one."
+- "envit is not a skill registry or installer. It is a declared
+  environment. Find skills wherever you like, then declare the ones the
+  project keeps in `envit.json`. Skills installed by hand or with another
+  tool stay where they are."
 
 When a user asks how to start: `envit init`, then `envit add owner/repo`
 for each library they depend on, then `envit sync`. Commit `envit.json`

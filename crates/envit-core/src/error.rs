@@ -38,7 +38,7 @@ pub enum Error {
     #[error("ref '{rref}' not found on {url}")]
     RefNotFound { rref: String, url: String },
 
-    #[error("refusing to replace non-link path {}: move it aside and re-run sync", .0.display())]
+    #[error("{} exists and was not installed by envit: remove it, or drop that entry from envit.json, then run `envit sync` again", .0.display())]
     LinkObstructed(std::path::PathBuf),
 
     #[error("--frozen: repo '{0}' is not in the lockfile (or its manifest entry changed); run `envit sync` without --frozen to update the lock")]

@@ -53,6 +53,7 @@
   .caption { font: 0.75rem ui-monospace, "SF Mono", Menlo, monospace; color: var(--dim); text-align: center; margin: -0.25rem 0 2rem; }
   .tagline { color: var(--dim); margin: 0 0 2rem; }
   h2 { font-size: 1.05rem; font-weight: 650; margin: 2.5rem 0 0.6rem; }
+  h3 { font-size: 0.95rem; font-weight: 650; margin: 2rem 0 0.5rem; }
   p { margin: 0.6rem 0; }
   a { color: var(--link); text-decoration: none; }
   a:hover { text-decoration: underline; }
@@ -263,6 +264,18 @@ $ envit sync
 <pre><code>$ envit init -g
 $ envit sync -g
 global   web-design-guidelines  dd089a8c752c  (vercel-labs/agent-skills)</code></pre>
+
+  <h3>Does envit replace my skills installer?</h3>
+
+  <p>No. Keep it. Use it to find skills and try them.</p>
+
+  <p>envit does one thing those tools do not: it reads a file.
+  <code>envit.json</code> says which repos and which skills a project
+  uses, and <code>envit sync</code> makes any machine match it. You
+  compose the set: which skills from which repos, which ones the agent
+  can invoke on its own. One file holds all of it, next to the code,
+  reviewed in a PR. Skills you installed by hand or with another tool
+  stay where they are. envit only manages what is declared in its file.</p>
 
   <h2>On disk</h2>
 

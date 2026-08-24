@@ -73,6 +73,11 @@ duplicated on your disk. Each sync generates `.envit/AGENTS.md` (with a
 the project root has an `AGENTS.md` or `CLAUDE.md`, `sync` appends a short
 fenced note that points there.
 
+envit is not a skill registry or installer. It is a declared environment.
+Find skills wherever you like, then declare the ones a project keeps in
+`envit.json`. Skills installed by hand or with another tool stay where
+they are. envit only manages what its file declares.
+
 ## Commands
 
 | command | |
