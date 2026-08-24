@@ -59,8 +59,8 @@ jobs:
       - name: SBOM (CycloneDX)
         run: |
           cargo install cargo-cyclonedx --locked
-          cargo cyclonedx --format json --override-filename envit-sbom
-          mv crates/envit/envit-sbom.cdx.json envit-sbom.cdx.json
+          cargo cyclonedx --format json --target all --override-filename envit-sbom
+          mv crates/envit/envit-sbom.json envit-sbom.cdx.json
       - name: attest build provenance
         uses: actions/attest-build-provenance@e8998f949152b193b063cb0ec769d69d929409be # v2
         with:
