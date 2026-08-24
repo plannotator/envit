@@ -29,7 +29,7 @@ cloud machines. Site: https://envit.dev
 ```
 
 External repos that your agents can use as context, and skills that they
-can use. One command materializes both:
+load. One command materializes both:
 
 ```
 $ envit sync
@@ -66,7 +66,9 @@ cargo build --release   # target/release/envit
 
 Skills land in `.agents/skills/` and `.claude/skills/`, where agents
 already look. Repo source lands in `.envit/repos/<name>/`, read-only, at
-a pinned commit. Each sync generates `.envit/AGENTS.md` (with a
+a pinned commit. envit stores each repo once per machine, in
+`~/.envit/store/`; every project links to that one copy, so nothing is
+duplicated on your disk. Each sync generates `.envit/AGENTS.md` (with a
 `CLAUDE.md` symlink) that lists every repo, its commit, and its path. If
 the project root has an `AGENTS.md` or `CLAUDE.md`, `sync` appends a short
 fenced note that points there.

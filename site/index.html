@@ -151,7 +151,7 @@
   }
 }</code></pre>
 
-  <p class="caption">external repos that your agents can use as context, and skills that they can use</p>
+  <p class="caption">external repos that your agents can use as context, and skills that they load</p>
 
   <div class="install">
     <div class="tabs" role="tablist">
@@ -206,13 +206,17 @@ $ envit sync
 
   <p><b>Repos</b></p>
 
+  <p>envit stores each repo once per machine, in <code>~/.envit/store/</code>,
+  keyed by commit. Every project links to that one copy. Ten projects that
+  use sqlite share one checkout. Nothing is duplicated on your disk.</p>
+
 <pre><code>my-app/
 ├── .agents/skills/grill-me/     <span class="comment"># agents discover skills here natively</span>
 ├── .claude/skills/grill-me/     <span class="comment"># Claude Code reads its own dir</span>
 └── .envit/
     ├── AGENTS.md                <span class="comment"># generated inventory: what is here, at which commit</span>
     ├── CLAUDE.md → AGENTS.md    <span class="comment"># symlink, so Claude Code reads it natively</span>
-    └── repos/
+    └── repos/                   <span class="comment"># symlinks into ~/.envit/store, one copy per machine</span>
         ├── sqlite/              <span class="comment"># full source, read-only</span>
         └── posthog-js/</code></pre>
 
