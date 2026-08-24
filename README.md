@@ -19,10 +19,10 @@ cloud machines. Site: https://envit.dev
   "skills": {
     "mattpocock/skills": ["grill-me", "grilling"],
     "emilkowalski/skills": "*",
-    "remotion-dev/skills": "*",
     "dmmulroy/anti-slop": "*",
     "backnotprop/bro": "bro",
     "obra/superpowers": "*",
+    "remotion-dev/skills": { "pick": "*", "modelInvocable": false },
     "cursor/plugins": { "path": "pstack", "pick": ["interrogate", "blast-radius"] }
   }
 }
