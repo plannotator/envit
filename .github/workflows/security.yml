@@ -20,6 +20,10 @@ jobs:
         with:
           persist-credentials: false
       - uses: zizmorcore/zizmor-action@3dc1ecc9bcb9e94e9b2c709687979e1298497054 # v0.6.2
+        with:
+          # SARIF upload needs Code Scanning, which private repos lack.
+          # Set to true when the repo goes public.
+          advanced-security: false
   gitleaks:
     # Secret scan over full history. Runs the MIT-licensed CLI directly;
     # the hosted action needs a license for organization repos.
