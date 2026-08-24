@@ -6,6 +6,17 @@
 <title>envit</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <meta name="description" content="Declarative repository context and skills for agents on your local or cloud machines. One JSON file, one command, commit-pinned, shared machine-wide.">
+<meta property="og:title" content="envit">
+<meta property="og:description" content="Declarative repository context and skills for agents on your local or cloud machines.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://envit.dev/">
+<meta property="og:image" content="https://envit.dev/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="envit">
+<meta name="twitter:description" content="Declarative repository context and skills for agents on your local or cloud machines.">
+<meta name="twitter:image" content="https://envit.dev/og.png">
 <style>
   :root {
     --bg: #ffffff;
@@ -34,6 +45,10 @@
   }
   main { max-width: 42rem; margin: 0 auto; padding: 4rem 1.25rem 4rem; }
   h1 { font-size: 1.5rem; font-weight: 650; margin: 0 0 0.25rem; letter-spacing: -0.01em; }
+  .titlerow { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+  .titlerow a { font-size: 0.875rem; color: var(--dim); }
+  .titlerow a:hover { color: var(--link); }
+  .caption { font: 0.75rem ui-monospace, "SF Mono", Menlo, monospace; color: var(--dim); text-align: center; margin: -0.25rem 0 2rem; }
   .tagline { color: var(--dim); margin: 0 0 2rem; }
   h2 { font-size: 1.05rem; font-weight: 650; margin: 2.5rem 0 0.6rem; }
   p { margin: 0.6rem 0; }
@@ -105,7 +120,10 @@
 </head>
 <body>
 <main>
-  <h1>envit</h1>
+  <div class="titlerow">
+    <h1>envit</h1>
+    <a href="https://github.com/plannotator/envit">github</a>
+  </div>
   <p class="tagline">Declarative repository context and skills for agents on your local or cloud machines.</p>
 
   <p class="filecap">envit.json</p>
@@ -122,14 +140,13 @@
     "<a href="https://github.com/emilkowalski/skills" target="_blank" rel="noopener">emilkowalski/skills</a>": "*",
     "<a href="https://github.com/remotion-dev/skills" target="_blank" rel="noopener">remotion-dev/skills</a>": "*",
     "<a href="https://github.com/dmmulroy/anti-slop" target="_blank" rel="noopener">dmmulroy/anti-slop</a>": "*",
-    "<a href="https://github.com/cursor/plugins" target="_blank" rel="noopener">cursor/plugins</a>": { "path": "pstack", "pick": ["interrogate", "blast-radius"] },
     "<a href="https://github.com/backnotprop/bro" target="_blank" rel="noopener">backnotprop/bro</a>": "bro",
-    "<a href="https://github.com/obra/superpowers" target="_blank" rel="noopener">obra/superpowers</a>": "*"
+    "<a href="https://github.com/obra/superpowers" target="_blank" rel="noopener">obra/superpowers</a>": "*",
+    "<a href="https://github.com/cursor/plugins" target="_blank" rel="noopener">cursor/plugins</a>": { "path": "pstack", "pick": ["interrogate", "blast-radius"] }
   }
 }</code></pre>
 
-  <p>Config file: external repos that your agents can use as context,
-  and skills that they can use.</p>
+  <p class="caption">external repos that your agents can use as context, and skills that they can use</p>
 
   <div class="install">
     <div class="tabs" role="tablist">
