@@ -1,0 +1,10 @@
+{
+  "name": "@envit/linux-arm64",
+  "version": "0.1.0",
+  "description": "envit binary for linux arm64 (aarch64-unknown-linux-musl). Installed by the envit package.",
+  "repository": { "type": "git", "url": "https://github.com/plannotator/envit" },
+  "license": "MIT OR Apache-2.0",
+  "os": ["linux"],
+  "cpu": ["arm64"],
+  "files": ["bin"]
+}

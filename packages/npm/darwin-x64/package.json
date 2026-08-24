@@ -1,0 +1,10 @@
+{
+  "name": "@envit/darwin-x64",
+  "version": "0.1.0",
+  "description": "envit binary for darwin x64 (x86_64-apple-darwin). Installed by the envit package.",
+  "repository": { "type": "git", "url": "https://github.com/plannotator/envit" },
+  "license": "MIT OR Apache-2.0",
+  "os": ["darwin"],
+  "cpu": ["x64"],
+  "files": ["bin"]
+}

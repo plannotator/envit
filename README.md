@@ -49,7 +49,7 @@ $ envit sync
 curl -fsSL https://envit.dev/install.sh | sh
 ```
 
-Also: `brew install envit`, `cargo install envit`, `npm install -g envit`.
+Also: `brew install plannotator/tap/envit`, `cargo install envit`, `npm install -g envit`.
 Windows: use WSL for now. Or build from source:
 
 ```sh

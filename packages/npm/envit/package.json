@@ -1,0 +1,17 @@
+{
+  "name": "envit",
+  "version": "0.1.0",
+  "description": "Declarative repository context and skills for coding agents.",
+  "homepage": "https://envit.dev",
+  "repository": { "type": "git", "url": "https://github.com/plannotator/envit" },
+  "license": "MIT OR Apache-2.0",
+  "bin": { "envit": "bin/envit.js" },
+  "files": ["bin"],
+  "engines": { "node": ">=18" },
+  "optionalDependencies": {
+    "@envit/darwin-arm64": "0.1.0",
+    "@envit/darwin-x64": "0.1.0",
+    "@envit/linux-arm64": "0.1.0",
+    "@envit/linux-x64": "0.1.0"
+  }
+}
