@@ -1,3 +1,5 @@
+<p align="center"><img src="brand/banner.svg" alt="envit" width="100%"></p>
+
 # envit
 
 Declarative repository context and skills for agents on your local or

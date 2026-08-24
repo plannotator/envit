@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 320" width="1280" height="320" role="img" aria-label="envit">
+  <rect width="1280" height="320" fill="#1b1b1b"/>
+  <!-- mark -->
+  <g transform="translate(96 112)">
+    <rect x="0" y="16" width="36" height="36" rx="5" fill="#f6f6f4"/>
+    <path d="M36 34h20" stroke="#f6f6f4" stroke-width="7" stroke-linecap="round"/>
+    <rect x="56" y="16" width="34" height="36" rx="5" fill="none" stroke="#f6f6f4" stroke-width="7"/>
+  </g>
+  <!-- wordmark -->
+  <text x="216" y="172" fill="#f6f6f4" font-family="-apple-system, 'Segoe UI', system-ui, sans-serif" font-size="88" font-weight="650" letter-spacing="-2">envit</text>
+  <!-- tagline -->
+  <text x="220" y="222" fill="#909090" font-family="-apple-system, 'Segoe UI', system-ui, sans-serif" font-size="26">Declarative repository context and skills for agents.</text>
+</svg>
