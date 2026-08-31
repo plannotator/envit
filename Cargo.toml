@@ -18,7 +18,7 @@ serde_json = { version = "1", features = ["preserve_order"] }
 thiserror = "2"
 # Git engine (PRD §20 D2): gix baseline, tightly feature-gated — every
 # feature here must be justified by a call site.
-gix = { version = "0.86", default-features = false, features = [
+gix = { version = "0.87", default-features = false, features = [
   "blocking-network-client",                 # fetch over git/file transports
   "blocking-http-transport-curl-rustls",     # https; curl backend per D4 (reqwest backend is experimental, no proxy support)
   "worktree-mutation",                       # tree -> directory extraction
